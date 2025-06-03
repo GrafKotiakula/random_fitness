@@ -48,7 +48,7 @@ public class ExerciseGenerator {
         int randomValue = egInfo.minActivity() + randomIndex * egInfo.preferredActivityStep();
 
         // in case (min - max) % step != 0
-        return Math.max(randomValue, egInfo.maxActivity());
+        return Math.min(randomValue, egInfo.maxActivity());
     }
 
     ///
