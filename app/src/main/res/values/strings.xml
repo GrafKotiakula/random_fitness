@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Random Fitness</string>
+
+    <string name="unit_seconds_display_value">s</string>
+    <string name="unit_repetitions_display_value">reps</string>
+
+    <string name="exercise_placeholder_text">Exercise</string>
+    <string name="activity_amount_placeholder_text">activity amount</string>
+    <string name="generate_exercise_button_text">Generate</string>
 </resources>

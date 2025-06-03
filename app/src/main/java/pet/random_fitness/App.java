@@ -1,7 +1,7 @@
 package pet.random_fitness;
 
-import android.graphics.Color;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,10 +11,23 @@ import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 
-public class App extends AppCompatActivity {
-    private Thread mainTextThread;
-    private TextView mainText;
+import pet.random_fitness.exercise.Exercise;
+import pet.random_fitness.exercise.ExerciseGenerator;
 
+///
+/// Main activity
+///
+
+public class App extends AppCompatActivity {
+    private ExerciseGenerator generator = new ExerciseGenerator();
+    private TextView exerciseText;
+    private TextView activityAmountText;
+    private Button generateButton;
+
+
+    ///
+    /// Makes app fullscreen
+    ///
     private void runFullscreen() {
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
 
@@ -37,67 +50,26 @@ public class App extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // configuring activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.app_main);
         runFullscreen();
 
-        mainText = findViewById(R.id.mainText);
-        mainTextThread = new Thread(this::colorChange);
-        mainTextThread.start();
+        // loading views
+        exerciseText = findViewById(R.id.exercise_text);
+        activityAmountText = findViewById(R.id.activity_amount_text);
+        generateButton = findViewById(R.id.generate_button);
+        generateButton.setOnClickListener(e -> generateNewExercise());
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mainTextThread.interrupt();
-        try{
-            if(mainTextThread != null) {
-                mainTextThread.join();
-                mainTextThread = null;
-            }
-        } catch (InterruptedException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
+    ///
+    /// Generates new random exercise.
+    /// Displays it in `exerciseText` and `activityAmountText` views
+    ///
+    private void generateNewExercise() {
+        Exercise exercise = generator.randomExercise();
 
-    private void colorChange() {
-        final int sleep = 50;
-        int r = 255, g = 0, b = 0;
-        try {
-            while(!Thread.currentThread().isInterrupted()) {
-                for(b = 0; g < 256 && !Thread.currentThread().isInterrupted(); g+=5){
-                    int color = Color.rgb(r, g, b);
-                    mainText.post(() -> mainText.setTextColor(color));
-                    Thread.sleep(sleep);
-                }
-                for(g = 255; r >= 0 && !Thread.currentThread().isInterrupted(); r-=5){
-                    int color = Color.rgb(r, g, b);
-                    mainText.post(() -> mainText.setTextColor(color));
-                    Thread.sleep(sleep);
-                }
-                for(r = 0; b < 256 && !Thread.currentThread().isInterrupted(); b+=5){
-                    int color = Color.rgb(r, g, b);
-                    mainText.post(() -> mainText.setTextColor(color));
-                    Thread.sleep(sleep);
-                }
-                for(b = 255; g >= 0 && !Thread.currentThread().isInterrupted(); g-=5){
-                    int color = Color.rgb(r, g, b);
-                    mainText.post(() -> mainText.setTextColor(color));
-                    Thread.sleep(sleep);
-                }
-                for(g = 0; r < 256 && !Thread.currentThread().isInterrupted(); r+=5){
-                    int color = Color.rgb(r, g, b);
-                    mainText.post(() -> mainText.setTextColor(color));
-                    Thread.sleep(sleep);
-                }
-                for(r = 255; b >= 0 && !Thread.currentThread().isInterrupted(); b-=5){
-                    int color = Color.rgb(r, g, b);
-                    mainText.post(() -> mainText.setTextColor(color));
-                    Thread.sleep(sleep);
-                }
-            }
-        } catch (InterruptedException ex) {
-            // do nothing
-        }
+        exerciseText.setText(exercise.name());
+        activityAmountText.setText( exercise.activityDisplayText(this) );
     }
 }
